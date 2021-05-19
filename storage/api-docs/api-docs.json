@@ -1,0 +1,251 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Star Wars API",
+        "description": "API documentation for Star Wars app.",
+        "contact": {
+            "email": "tkisiel5w4@yahoo.com"
+        },
+        "license": {
+            "name": "MIT"
+        },
+        "version": "0.1"
+    },
+    "servers": [
+        {
+            "url": "http://localhost/api/v1",
+            "description": "Star Wars API Server"
+        }
+    ],
+    "paths": {
+        "/api/login": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "authenticate existing user",
+                "operationId": "App\\Http\\Controllers\\Auth\\LoginController::__invoke",
+                "requestBody": {
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": ""
+                    },
+                    "422": {
+                        "description": ""
+                    },
+                    "401": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/profile/update": {
+            "put": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "update user profile data",
+                "operationId": "App\\Http\\Controllers\\Auth\\ProfileUpdateController::__invoke",
+                "requestBody": {
+                    "required": true
+                },
+                "responses": {
+                    "200": {
+                        "description": ""
+                    },
+                    "422": {
+                        "description": ""
+                    },
+                    "401": {
+                        "description": ""
+                    }
+                }
+            }
+        },
+        "/api/register": {
+            "post": {
+                "tags": [
+                    "auth"
+                ],
+                "summary": "create new user account",
+                "operationId": "App\\Http\\Controllers\\Auth\\RegisterController::__invoke",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/RegisterRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "New user was successfully created.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RegisterCreatedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "The given data was invalid.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/RegisterUnprocessableResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "User": {
+                "title": "User",
+                "description": "User model",
+                "properties": {
+                    "id": {
+                        "title": "id",
+                        "description": "User id",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "hero_id": {
+                        "title": "hero_id",
+                        "description": "Correlated star wars hero's id",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 23
+                    },
+                    "email": {
+                        "title": "email",
+                        "description": "Email address of the user",
+                        "type": "string",
+                        "example": "john.doe@example.com"
+                    },
+                    "created_at": {
+                        "title": "created_at",
+                        "description": "User creation date",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-05-19 15:30:12"
+                    },
+                    "updated_at": {
+                        "title": "updated_at",
+                        "description": "The last user edition date",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-05-19 15:30:12"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "User"
+                }
+            },
+            "RegisterRequest": {
+                "title": "Registration request",
+                "description": "Registration request body data",
+                "required": [
+                    "email",
+                    "password",
+                    "password_confirmation"
+                ],
+                "properties": {
+                    "email": {
+                        "title": "email",
+                        "description": "Email address for the user being created.",
+                        "type": "string",
+                        "example": "john.doe@example.com"
+                    },
+                    "password": {
+                        "title": "password",
+                        "description": "Password for the user being created.",
+                        "type": "string",
+                        "example": "Vertex25!"
+                    },
+                    "password_confirmation": {
+                        "title": "password",
+                        "description": "Password confirmation for the user being created.",
+                        "type": "string",
+                        "example": "Vertex25!"
+                    }
+                },
+                "type": "object"
+            },
+            "RegisterCreatedResponse": {
+                "title": "Registration response",
+                "description": "Registration respone after user being created.",
+                "properties": {
+                    "message": {
+                        "title": "message",
+                        "type": "string",
+                        "example": "Your account has been successfully created! Now You can sign in via login endpoint."
+                    },
+                    "user": {
+                        "$ref": "#/components/schemas/User"
+                    }
+                },
+                "type": "object"
+            },
+            "RegisterUnprocessableResponse": {
+                "title": "Registration response",
+                "description": "Registration respone when giver data was invalid.",
+                "properties": {
+                    "message": {
+                        "title": "message",
+                        "type": "string",
+                        "example": "The given data was invalid."
+                    },
+                    "errors": {
+                        "title": "errors",
+                        "description": "Description of invalid entites",
+                        "properties": {
+                            "email": {
+                                "type": "object",
+                                "example": [
+                                    "The email field is required."
+                                ]
+                            },
+                            "password": {
+                                "type": "object",
+                                "example": [
+                                    "The password must be at least 8 characters.",
+                                    "Password is too weak. At least one letter, number and special character are required."
+                                ]
+                            }
+                        },
+                        "type": "object"
+                    }
+                },
+                "type": "object"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "auth",
+            "description": "registration, authentication and profile updated"
+        },
+        {
+            "name": "films",
+            "description": "films corelated with user's star wars hero"
+        },
+        {
+            "name": "planets",
+            "description": "planets corelated with user's star wars hero"
+        }
+    ],
+    "security": [
+        []
+    ]
+}
