@@ -14,14 +14,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/register', \App\Http\Controllers\Auth\RegisterController::class );
-Route::post('/login', \App\Http\Controllers\Auth\LoginController::class );
+Route::post( '/register', \App\Http\Controllers\Auth\RegisterController::class );
+Route::post( '/login', \App\Http\Controllers\Auth\LoginController::class );
 
-Route::middleware('auth:api')->group( function() {
-   Route::get('/films', function() {
-       return response()->json([ 'message' => 'test' ], 200);
-   });
-});
+Route::middleware( 'auth:api' )->group( function () {
+   Route::put( '/user/profile', \App\Http\Controllers\Auth\ProfileController::class );
+
+    Route::get( '/films', function () {
+        return response()->json( [ 'message' => 'test' ], 200 );
+    } );
+} );
 
 //Route::middleware('auth:api')->get('/user', function (Request $request) {
 //    return $request->user();

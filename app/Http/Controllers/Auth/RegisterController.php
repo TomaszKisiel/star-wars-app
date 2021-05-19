@@ -40,7 +40,7 @@ class RegisterController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function __invoke( Request $request ) {
-        $this->validation( $data = $request->all() );
+        $data = $this->validation( $request->all() );
 
         $user = User::create( [
             'hero_id' => 1,
@@ -60,7 +60,7 @@ class RegisterController extends Controller {
             'password' => [ 'required', 'min:8', 'max:64', 'regex:/(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\W])/', 'confirmed' ]
         ], [
             'password.regex' => 'Password is too weak. At least one letter, number and special character are required.'
-        ] )->validate();
+        ] )->validated();
     }
 
 }
