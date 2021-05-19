@@ -93,16 +93,15 @@ class LoginControllerTest extends TestCase {
     public function user_receives_valid_token_after_signing_in() {
         /** given */
         $this->prepareFakeUser();
-$this->withoutExceptionHandling();
 
         /** when */
         $response = $this->postJson( '/api/login', $this->getUserData() );
         $token = $response->json()[ "token" ];
 
-        $response = $this->withHeaders( [ 'Authorization' => 'Bearer ' . $token ] )->getJSON( '/api/films' );
+        $response = $this->withHeaders( [ 'Authorization' => 'Bearer ' . $token ] )->putJSON( '/api/user/profile' );
 
         /** expect */
-        $response->assertSuccessful();
+        $response->assertStatus(422);
     }
 
     private function prepareFakeUser() {

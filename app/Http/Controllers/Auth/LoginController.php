@@ -37,7 +37,7 @@ class LoginController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function __invoke( Request $request ) {
-        $data = $this->validation( $request->all() );
+        $this->validation( $data = $request->only(['email', 'password']) );
 
         if ( ! Auth::attempt( $data ) ) {
             return response()->json([
@@ -60,6 +60,6 @@ class LoginController extends Controller {
         return Validator::make( $data, [
             'email' => [ 'required' ],
             'password' => [ 'required' ]
-        ] )->validated();
+        ] )->validate();
     }
 }

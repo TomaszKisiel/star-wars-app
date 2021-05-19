@@ -36,7 +36,7 @@ class ProfileController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function __invoke( Request $request ) {
-        $data = $this->validation( $request->all() );
+        $this->validation( $data = $request->only(['email']) );
 
         $user = Auth::user();
         $user->email = $data[ "email" ];
@@ -50,6 +50,6 @@ class ProfileController extends Controller {
     private function validation( array $data = [] ) {
         return Validator::make( $data, [
             'email' => [ 'required', 'email', 'max:255', 'unique:users' ],
-        ] )->validated();
+        ] )->validate();
     }
 }
