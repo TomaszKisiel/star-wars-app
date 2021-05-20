@@ -5,8 +5,8 @@ namespace App\Swagger\Responses;
 
 /**
  * @OA\Schema(
- *      title="Registration response",
- *      description="Registration respone after user being created.",
+ *      title="Registration created response",
+ *      description="Registration response after user being created.",
  *      type="object"
  * )
  */

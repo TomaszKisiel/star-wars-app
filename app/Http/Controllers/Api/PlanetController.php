@@ -10,6 +10,23 @@ use Illuminate\Support\Facades\Http;
 class PlanetController extends Controller {
 
     /**
+     * @OA\Get(
+     *     path="/api/planets",
+     *     summary="planets associated to user's hero from star wars",
+     *     tags={"planets"},
+     *     security={{ "bearerAuth":{} }},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Returns list of planets associated with user's star wars hero",
+     *         @OA\JsonContent(ref="#/components/schemas/PlanetListResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="There is required to provide correct api token to see this resources",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthenticatedResponse")
+     *     ),
+     * )
+     *
      * @return \Illuminate\Http\JsonResponse
      */
     public function index() {
@@ -27,6 +44,31 @@ class PlanetController extends Controller {
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/planets/{planet}",
+     *     summary="planet associated to user's hero from star wars by id",
+     *     tags={"planets"},
+     *     security={{ "bearerAuth":{} }},
+     *     @OA\Parameter(
+     *          name="planet",
+     *          description="Planet id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Return planet associated with user's star wars hero by id",
+     *         @OA\JsonContent(ref="#/components/schemas/Planet")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="There is required to provide correct api token to see this resources",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthenticatedResponse")
+     *     ),
+     * )
      * @param                     $id
      * @param CheckResourceAccess $resourceAccess
      * @return \Illuminate\Http\JsonResponse

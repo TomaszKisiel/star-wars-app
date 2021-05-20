@@ -5,12 +5,12 @@ namespace App\Swagger\Responses;
 
 /**
  * @OA\Schema(
- *      title="Registration response",
- *      description="Registration respone when giver data was invalid.",
+ *      title="Unprocessable response",
+ *      description="When given data was invalid.",
  *      type="object"
  * )
  */
-class RegisterUnprocessableResponse {
+class UnprocessableResponse {
 
     /**
      * @OA\Property (

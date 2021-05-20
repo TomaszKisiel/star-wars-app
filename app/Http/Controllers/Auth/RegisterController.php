@@ -33,7 +33,7 @@ class RegisterController extends Controller {
      *     @OA\Response(
      *         response=422,
      *         description="The given data was invalid.",
-     *         @OA\JsonContent(ref="#/components/schemas/RegisterUnprocessableResponse")
+     *         @OA\JsonContent(ref="#/components/schemas/UnprocessableResponse")
      *     )
      * )
      * @param Request         $request

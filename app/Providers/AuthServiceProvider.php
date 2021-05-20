@@ -2,8 +2,12 @@
 
 namespace App\Providers;
 
+use App\Models\ApiToken;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Validation\UnauthorizedException;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -25,6 +29,12 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        Auth::viaRequest('tokens', function ($request) {
+            if ( ApiToken::where('api_token', $request->bearerToken())->exists() ) {
+                return ApiToken::where('api_token', $request->bearerToken())->first()->user;
+            }
+
+            throw new AuthenticationException();
+        });
     }
 }

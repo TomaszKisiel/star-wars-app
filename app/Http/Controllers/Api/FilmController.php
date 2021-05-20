@@ -10,6 +10,22 @@ use Illuminate\Support\Facades\Http;
 class FilmController extends Controller {
 
     /**
+     * @OA\Get(
+     *     path="/api/films",
+     *     summary="films associated to user's hero from star wars",
+     *     tags={"films"},
+     *     security={{ "bearerAuth":{} }},
+     *     @OA\Response(
+     *         response=200,
+     *         description="Returns list of films associated with user's star wars hero",
+     *         @OA\JsonContent(ref="#/components/schemas/FilmListResponse")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="There is required to provide correct api token to see this resources",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthenticatedResponse")
+     *     ),
+     * )
      * @return \Illuminate\Http\JsonResponse
      */
     public function index() {
@@ -29,6 +45,31 @@ class FilmController extends Controller {
     }
 
     /**
+     * @OA\Get(
+     *     path="/api/films/{film}",
+     *     summary="film associated to user's hero from star wars by id",
+     *     tags={"films"},
+     *     security={{ "bearerAuth":{} }},
+     *     @OA\Parameter(
+     *          name="film",
+     *          description="Film id",
+     *          required=true,
+     *          in="path",
+     *          @OA\Schema(
+     *              type="integer"
+     *          )
+     *      ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Return film associated with user's star wars hero by id",
+     *         @OA\JsonContent(ref="#/components/schemas/Film")
+     *     ),
+     *     @OA\Response(
+     *         response=401,
+     *         description="There is required to provide correct api token to see this resources",
+     *         @OA\JsonContent(ref="#/components/schemas/UnauthenticatedResponse")
+     *     ),
+     * )
      * @param                     $id
      * @param CheckResourceAccess $resourceAccess
      * @return \Illuminate\Http\JsonResponse

@@ -13,11 +13,177 @@
     },
     "servers": [
         {
-            "url": "http://localhost/api/v1",
+            "url": "http://localhost/",
             "description": "Star Wars API Server"
         }
     ],
     "paths": {
+        "/api/films": {
+            "get": {
+                "tags": [
+                    "films"
+                ],
+                "summary": "films associated to user's hero from star wars",
+                "operationId": "App\\Http\\Controllers\\Api\\FilmController::index",
+                "responses": {
+                    "200": {
+                        "description": "Returns list of films associated with user's star wars hero",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FilmListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "There is required to provide correct api token to see this resources",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthenticatedResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/films/{film}": {
+            "get": {
+                "tags": [
+                    "films"
+                ],
+                "summary": "film associated to user's hero from star wars by id",
+                "operationId": "App\\Http\\Controllers\\Api\\FilmController::show",
+                "parameters": [
+                    {
+                        "name": "film",
+                        "in": "path",
+                        "description": "Film id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return film associated with user's star wars hero by id",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Film"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "There is required to provide correct api token to see this resources",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthenticatedResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/planets": {
+            "get": {
+                "tags": [
+                    "planets"
+                ],
+                "summary": "planets associated to user's hero from star wars",
+                "operationId": "App\\Http\\Controllers\\Api\\PlanetController::index",
+                "responses": {
+                    "200": {
+                        "description": "Returns list of planets associated with user's star wars hero",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/PlanetListResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "There is required to provide correct api token to see this resources",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthenticatedResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/planets/{planet}": {
+            "get": {
+                "tags": [
+                    "planets"
+                ],
+                "summary": "planet associated to user's hero from star wars by id",
+                "operationId": "App\\Http\\Controllers\\Api\\PlanetController::show",
+                "parameters": [
+                    {
+                        "name": "planet",
+                        "in": "path",
+                        "description": "Planet id",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Return planet associated with user's star wars hero by id",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Planet"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "There is required to provide correct api token to see this resources",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthenticatedResponse"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
         "/api/login": {
             "post": {
                 "tags": [
@@ -26,17 +192,45 @@
                 "summary": "authenticate existing user",
                 "operationId": "App\\Http\\Controllers\\Auth\\LoginController::__invoke",
                 "requestBody": {
-                    "required": true
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/LoginRequest"
+                            }
+                        }
+                    }
                 },
                 "responses": {
                     "200": {
-                        "description": ""
-                    },
-                    "422": {
-                        "description": ""
+                        "description": "Returns new token when valid credentials are provided",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SignInSuccessResponse"
+                                }
+                            }
+                        }
                     },
                     "401": {
-                        "description": ""
+                        "description": "There is required to provide correct email and password to get token",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/SignInFailedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "The given data was invalid.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnprocessableResponse"
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -49,19 +243,52 @@
                 "summary": "update user profile data",
                 "operationId": "App\\Http\\Controllers\\Auth\\ProfileController::__invoke",
                 "requestBody": {
-                    "required": true
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "$ref": "#/components/schemas/ProfileUpdateRequest"
+                            }
+                        }
+                    }
                 },
                 "responses": {
                     "200": {
-                        "description": ""
-                    },
-                    "422": {
-                        "description": ""
+                        "description": "Returns acknowledge when the user profile has been successfully updated",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ProfileUpdateSuccessResponse"
+                                }
+                            }
+                        }
                     },
                     "401": {
-                        "description": ""
+                        "description": "There is required to provide correct api token to see this resources",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnauthenticatedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "The given data was invalid.",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/UnprocessableResponse"
+                                }
+                            }
+                        }
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
             }
         },
         "/api/register": {
@@ -97,7 +324,7 @@
                         "content": {
                             "application/json": {
                                 "schema": {
-                                    "$ref": "#/components/schemas/RegisterUnprocessableResponse"
+                                    "$ref": "#/components/schemas/UnprocessableResponse"
                                 }
                             }
                         }
@@ -108,8 +335,238 @@
     },
     "components": {
         "schemas": {
+            "Film": {
+                "title": "Film model",
+                "description": "Film model",
+                "properties": {
+                    "title": {
+                        "title": "title",
+                        "description": "Film title",
+                        "type": "string",
+                        "format": "string",
+                        "example": "A New Hope"
+                    },
+                    "episode_id": {
+                        "title": "episode_id",
+                        "description": "Film id",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 1
+                    },
+                    "opening_crawl": {
+                        "title": "opening_crawl",
+                        "description": "Opening crawler of film",
+                        "type": "string",
+                        "format": "string",
+                        "example": "Far, far away..."
+                    },
+                    "director": {
+                        "title": "director",
+                        "description": "Film's director",
+                        "type": "string",
+                        "format": "string",
+                        "example": "George Lucas"
+                    },
+                    "producer": {
+                        "title": "producer",
+                        "description": "Film's producer",
+                        "type": "string",
+                        "format": "string",
+                        "example": "Gary Kurtz, Rick McCallum"
+                    },
+                    "release_date": {
+                        "title": "release_date",
+                        "description": "Date the movie was released",
+                        "type": "string",
+                        "format": "date",
+                        "example": "1977-05-25"
+                    },
+                    "characters": {
+                        "title": "characters",
+                        "description": "Urls of characters that were featured in the film",
+                        "type": "array",
+                        "format": "array",
+                        "items": {
+                            "example": "http://swapi.dev/api/people/1/"
+                        }
+                    },
+                    "planets": {
+                        "title": "planets",
+                        "description": "Urls of planets that were featured in the film",
+                        "type": "array",
+                        "format": "array",
+                        "items": {
+                            "example": "http://swapi.dev/api/planets/1/"
+                        }
+                    },
+                    "starships": {
+                        "title": "starships",
+                        "description": "Urls of starships that were featured in the film",
+                        "type": "array",
+                        "format": "array",
+                        "items": {
+                            "example": "http://swapi.dev/api/starships/1/"
+                        }
+                    },
+                    "vehicles": {
+                        "title": "vehicles",
+                        "description": "Urls of vehicles that were featured in the film",
+                        "type": "array",
+                        "format": "array",
+                        "items": {
+                            "example": "http://swapi.dev/api/vehicles/1/"
+                        }
+                    },
+                    "species": {
+                        "title": "species",
+                        "description": "Urls of species that were featured in the film",
+                        "type": "array",
+                        "format": "array",
+                        "items": {
+                            "example": "http://swapi.dev/api/species/1/"
+                        }
+                    },
+                    "created": {
+                        "title": "created",
+                        "description": "Film creation date",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-05-19 15:30:12"
+                    },
+                    "edited": {
+                        "title": "edited",
+                        "description": "The last film edition date",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-05-19 15:30:12"
+                    },
+                    "url": {
+                        "title": "url",
+                        "description": "Resource url",
+                        "type": "string",
+                        "format": "uri",
+                        "example": "http://swapi.dev/api/films/1"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Film"
+                }
+            },
+            "Planet": {
+                "title": "Planet model",
+                "description": "Planet model",
+                "properties": {
+                    "title": {
+                        "title": "name",
+                        "description": "Planet name",
+                        "type": "string",
+                        "format": "string",
+                        "example": "Tatooine"
+                    },
+                    "rotation_period": {
+                        "title": "rotation_period",
+                        "description": "Time the planet rotates",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 24
+                    },
+                    "orbital_period": {
+                        "title": "orbital_period",
+                        "description": "Time the planet orbits",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": "304"
+                    },
+                    "diameter": {
+                        "title": "diameter",
+                        "description": "Planet's diameter",
+                        "type": "string",
+                        "format": "int64",
+                        "example": "10465"
+                    },
+                    "climate": {
+                        "title": "climate",
+                        "description": "Planet's climate",
+                        "type": "string",
+                        "format": "string",
+                        "example": "arid"
+                    },
+                    "gravity": {
+                        "title": "gravity",
+                        "description": "Gravitational coefficient of the planet",
+                        "type": "string",
+                        "format": "string",
+                        "example": "1 standard"
+                    },
+                    "terrain": {
+                        "title": "terrain",
+                        "description": "Type of surface on the planet",
+                        "type": "string",
+                        "format": "string",
+                        "example": "desert"
+                    },
+                    "surface_water": {
+                        "title": "surface_water",
+                        "description": "Amount of water reservoirs on the planet",
+                        "type": "integer",
+                        "format": "int64",
+                        "example": "1"
+                    },
+                    "population": {
+                        "title": "population",
+                        "description": "Amount of intelligent beings inhabiting the planet",
+                        "type": "string",
+                        "format": "int64",
+                        "example": "200000"
+                    },
+                    "residents": {
+                        "title": "residents",
+                        "description": "Urls of characters associated with planet",
+                        "type": "array",
+                        "format": "array",
+                        "items": {
+                            "example": "http://swapi.dev/api/people/1/"
+                        }
+                    },
+                    "films": {
+                        "title": "films",
+                        "description": "Urls of films where planet featured",
+                        "type": "array",
+                        "format": "array",
+                        "items": {
+                            "example": "http://swapi.dev/api/films/1/"
+                        }
+                    },
+                    "created": {
+                        "title": "created",
+                        "description": "Planet creation date",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-05-19 15:30:12"
+                    },
+                    "edited": {
+                        "title": "edited",
+                        "description": "The last planet edition date",
+                        "type": "string",
+                        "format": "datetime",
+                        "example": "2021-05-19 15:30:12"
+                    },
+                    "url": {
+                        "title": "url",
+                        "description": "Resource url",
+                        "type": "string",
+                        "format": "uri",
+                        "example": "http://swapi.dev/api/planets/1"
+                    }
+                },
+                "type": "object",
+                "xml": {
+                    "name": "Planet"
+                }
+            },
             "User": {
-                "title": "User",
+                "title": "User model",
                 "description": "User model",
                 "properties": {
                     "id": {
@@ -152,6 +609,45 @@
                     "name": "User"
                 }
             },
+            "LoginRequest": {
+                "title": "Login request",
+                "description": "Login request body data",
+                "required": [
+                    "email",
+                    "password"
+                ],
+                "properties": {
+                    "email": {
+                        "title": "email",
+                        "description": "Email address to the user's account.",
+                        "type": "string",
+                        "example": "john.doe@example.com"
+                    },
+                    "password": {
+                        "title": "password",
+                        "description": "Password to the user's account.",
+                        "type": "string",
+                        "example": "Vertex25!"
+                    }
+                },
+                "type": "object"
+            },
+            "ProfileUpdateRequest": {
+                "title": "Profile update request",
+                "description": "Profile update request body data",
+                "required": [
+                    "email"
+                ],
+                "properties": {
+                    "email": {
+                        "title": "email",
+                        "description": "New email address to the user's account.",
+                        "type": "string",
+                        "example": "jane.doe@example.com"
+                    }
+                },
+                "type": "object"
+            },
             "RegisterRequest": {
                 "title": "Registration request",
                 "description": "Registration request body data",
@@ -182,9 +678,52 @@
                 },
                 "type": "object"
             },
+            "FilmListResponse": {
+                "title": "Films list response",
+                "description": "Films associated to user's hero from star wars",
+                "properties": {
+                    "films": {
+                        "title": "films",
+                        "description": "User associated films",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Film"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "PlanetListResponse": {
+                "title": "Planets list response",
+                "description": "Planets associated to user's hero from star wars",
+                "properties": {
+                    "planets": {
+                        "title": "planets",
+                        "description": "User associated planets",
+                        "type": "array",
+                        "items": {
+                            "$ref": "#/components/schemas/Planet"
+                        }
+                    }
+                },
+                "type": "object"
+            },
+            "ProfileUpdateSuccessResponse": {
+                "title": "Sign in success response",
+                "description": "When email and password are valid",
+                "properties": {
+                    "message": {
+                        "title": "message",
+                        "type": "string",
+                        "format": "string",
+                        "example": "Great! Your profile has been successfully updated."
+                    }
+                },
+                "type": "object"
+            },
             "RegisterCreatedResponse": {
-                "title": "Registration response",
-                "description": "Registration respone after user being created.",
+                "title": "Registration created response",
+                "description": "Registration response after user being created.",
                 "properties": {
                     "message": {
                         "title": "message",
@@ -197,9 +736,53 @@
                 },
                 "type": "object"
             },
-            "RegisterUnprocessableResponse": {
-                "title": "Registration response",
-                "description": "Registration respone when giver data was invalid.",
+            "SignInFailedResponse": {
+                "title": "Sign in failed response",
+                "description": "When email and password are invalid or missing",
+                "properties": {
+                    "message": {
+                        "title": "message",
+                        "type": "string",
+                        "example": "Unfortunately! The given credentials don\\'t match any existing user."
+                    }
+                },
+                "type": "object"
+            },
+            "SignInSuccessResponse": {
+                "title": "Sign in success response",
+                "description": "When email and password are valid",
+                "properties": {
+                    "message": {
+                        "title": "message",
+                        "type": "string",
+                        "format": "string",
+                        "example": "You have been logged in successfully. You can now access your data via the bearer API token."
+                    },
+                    "token": {
+                        "title": "token",
+                        "description": "Bearer token that you can use to get to secure endpoints",
+                        "type": "string",
+                        "format": "string",
+                        "example": "ogDCM1z1vrwHDhRwMEBby5AlmvY0WrmOGkfN7Rn0LyckOkbeEI4l9IanRwBrKdCl"
+                    }
+                },
+                "type": "object"
+            },
+            "UnauthenticatedResponse": {
+                "title": "Unauthenticated response",
+                "description": "When token is invalid or missing",
+                "properties": {
+                    "message": {
+                        "title": "message",
+                        "type": "string",
+                        "example": "You're unauthenticated because of wrong or not provided api token. Please make sure that your token is correct or sign in again to get new one."
+                    }
+                },
+                "type": "object"
+            },
+            "UnprocessableResponse": {
+                "title": "Unprocessable response",
+                "description": "When given data was invalid.",
                 "properties": {
                     "message": {
                         "title": "message",
@@ -229,6 +812,15 @@
                 },
                 "type": "object"
             }
+        },
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "name": "bearerAuth",
+                "in": "header",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
         }
     },
     "tags": [
@@ -238,11 +830,11 @@
         },
         {
             "name": "films",
-            "description": "films corelated with user's star wars hero"
+            "description": "films associated with user's star wars hero"
         },
         {
             "name": "planets",
-            "description": "planets corelated with user's star wars hero"
+            "description": "planets associated with user's star wars hero"
         }
     ],
     "security": [

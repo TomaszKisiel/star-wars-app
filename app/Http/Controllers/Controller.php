@@ -21,11 +21,19 @@ use Illuminate\Routing\Controller as BaseController;
  * )
  * @OA\Tag(
  *     name="films",
- *     description="films corelated with user's star wars hero",
+ *     description="films associated with user's star wars hero",
  * )
  * @OA\Tag(
  *     name="planets",
- *     description="planets corelated with user's star wars hero",
+ *     description="planets associated with user's star wars hero",
+ * )
+ * @OA\SecurityScheme(
+ *      securityScheme="bearerAuth",
+ *      in="header",
+ *      name="bearerAuth",
+ *      type="http",
+ *      scheme="bearer",
+ *      bearerFormat="JWT",
  * )
  * @OA\Server(
  *     url=SWAGGER_HOST,
