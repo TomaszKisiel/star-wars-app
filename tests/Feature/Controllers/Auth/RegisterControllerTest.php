@@ -45,8 +45,8 @@ class RegisterControllerTest extends TestCase {
         $user = User::find( $response->json()[ 'user' ][ 'id' ] );
 
         /** expect */
-        $this->assertEquals( $credentials['email'], $user->email );
-        $this->assertTrue( Hash::check( $credentials['password'], $user->password ) );
+        $this->assertEquals( $credentials[ 'email' ], $user->email );
+        $this->assertTrue( Hash::check( $credentials[ 'password' ], $user->password ) );
     }
 
     /** @test */
@@ -90,7 +90,7 @@ class RegisterControllerTest extends TestCase {
     /** @test */
     public function user_cannot_register_with_to_long_email() {
         /** when */
-        $response = $this->postJSON( '/api/register', $this->getUserData( [ 'email' => Str::random(300) . '@example.com' ] ) );
+        $response = $this->postJSON( '/api/register', $this->getUserData( [ 'email' => Str::random( 300 ) . '@example.com' ] ) );
 
         /** expect */
         $response->assertStatus( 422 );
@@ -164,7 +164,7 @@ class RegisterControllerTest extends TestCase {
     /** @test */
     public function user_cannot_register_with_too_long_password() {
         /** when */
-        $password = Str::random(64) . "0Rh-";
+        $password = Str::random( 64 ) . "0Rh-";
         $response = $this->postJSON( '/api/register', $this->getUserData( [ 'password' => $password, 'password_confirmation' => $password ] ) );
 
         /** expect */
@@ -227,6 +227,41 @@ class RegisterControllerTest extends TestCase {
                 ]
             ]
         ] );
+    }
+
+    /**
+     * There is enormous small probability that this test fail when 10 random numbers from row are the same.
+     * These probability is (1/N)^M where N is number of records in SW API heroes database and M is a number
+     * of tries. When N = 82 and M = 10 the probability is equal to 7.26e-20 which mean that fail happened
+     * very rarely.
+     * @test
+     * @covers \App\Actions\GetRandomHeroId
+     */
+    public function user_receives_random_hero_id_during_registration() {
+        /** when */
+        $herosIds = [];
+        for ( $i = 0; $i < 10; $i++ ) {
+            $response = $this->postJSON( '/api/register', $this->getUserData( [
+                'email' => 'abcd' . $i . '@example.com'
+            ] ) );
+
+            array_push( $herosIds, $response->json()[ 'user' ][ 'hero_id' ] );
+        }
+
+
+        /** expect */
+        $this->assertCount( 10, $herosIds );
+        $this->assertTrue( $this->simplyRandomnessTest( $herosIds ) );
+    }
+
+    private function simplyRandomnessTest( array $data = [] ) {
+        for ( $i = 0; $i < count( $data ); $i++ ) {
+            if ( $i > 0 && $data[$i] != $data[$i-1] ) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private function getUserData( array $data = [] ) {

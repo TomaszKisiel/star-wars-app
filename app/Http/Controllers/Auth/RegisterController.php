@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Actions\GetRandomHeroId;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -35,15 +36,15 @@ class RegisterController extends Controller {
      *         @OA\JsonContent(ref="#/components/schemas/RegisterUnprocessableResponse")
      *     )
      * )
-     *
-     * @param Request $request
+     * @param Request         $request
+     * @param GetRandomHeroId $service
      * @return \Illuminate\Http\JsonResponse
      */
-    public function __invoke( Request $request ) {
+    public function __invoke( Request $request, GetRandomHeroId $service) {
         $this->validation( $data = $request->only(['email', 'password', 'password_confirmation']) );
 
         $user = User::create( [
-            'hero_id' => 1,
+            'hero_id' => $service->execute(),
             'email' => $data['email'],
             'password' => Hash::make( $data[ 'password' ] )
         ] );

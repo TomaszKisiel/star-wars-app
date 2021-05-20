@@ -46,7 +46,10 @@ class PlanetControllerTest extends TestCase {
         ] );
     }
 
-    /** @test */
+    /**
+     * @test
+     * @covers \App\Actions\CheckResourceAccess
+     */
     public function authenticated_user_can_access_his_hero_planet_by_id() {
         /** given */
         $user = User::factory()->create( [ 'hero_id' => 1 ] );
@@ -64,7 +67,10 @@ class PlanetControllerTest extends TestCase {
         ] );
     }
 
-    /** @test */
+    /**
+     * @test
+     * @covers \App\Actions\CheckResourceAccess
+     */
     public function authenticated_user_cannot_access_other_planet_by_id() {
         /** given */
         $user = User::factory()->create( [ 'hero_id' => 1 ] );

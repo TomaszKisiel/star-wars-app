@@ -41,13 +41,13 @@
                 }
             }
         },
-        "/api/profile/update": {
+        "/api/user/profile": {
             "put": {
                 "tags": [
                     "auth"
                 ],
                 "summary": "update user profile data",
-                "operationId": "App\\Http\\Controllers\\Auth\\ProfileUpdateController::__invoke",
+                "operationId": "App\\Http\\Controllers\\Auth\\ProfileController::__invoke",
                 "requestBody": {
                     "required": true
                 },

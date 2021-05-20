@@ -12,7 +12,7 @@ class ProfileController extends Controller {
 
     /**
      * @OA\Put(
-     *     path="/api/profile/update",
+     *     path="/api/user/profile",
      *     summary="update user profile data",
      *     tags={"auth"},
      *     @OA\RequestBody(

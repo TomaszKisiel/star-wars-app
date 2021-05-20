@@ -36,7 +36,7 @@ class PlanetController extends Controller {
         $planet = Http::get( 'https://swapi.dev/api/planets/' . $id )->collect();
 
         $authenticated = collect( $planet->get( 'residents' ) )->contains( function ($url) use ( $user, $resourceAccess ) {
-            return $resourceAccess->handle( $url, '/api/people/' . $user->hero_id );
+            return $resourceAccess->execute( $url, '/api/people/' . $user->hero_id );
         });
 
         if ( ! $authenticated ) {

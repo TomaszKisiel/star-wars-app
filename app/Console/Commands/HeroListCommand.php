@@ -6,13 +6,13 @@ use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 
-class Heroes extends Command {
+class HeroListCommand extends Command {
 
     /**
      * The name and signature of the console command.
      * @var string
      */
-    protected $signature = 'heroes:list {--page=1 : List page number to display} {--per-page=10 : Amount of displayed user per page}';
+    protected $signature = 'hero:list {--page=1 : List page number to display} {--per-page=10 : Amount of displayed user per page}';
 
     /**
      * The console command description.
@@ -40,6 +40,7 @@ class Heroes extends Command {
 
         $data = User::skip( ( $page - 1 ) * $perPage)
             ->take($perPage)
+            ->orderBy('id')
             ->get(['id', 'email', 'hero_id'])
             ->map( function( $user ) {
                 $hero = Http::get('https://swapi.dev/api/people/' . $user->hero_id )->collect();
