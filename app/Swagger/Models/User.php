@@ -5,7 +5,7 @@ namespace App\Swagger\Models;
 
 /**
  * @OA\Schema(
- *     title="User",
+ *     title="User model",
  *     description="User model",
  *     @OA\Xml(
  *         name="User"

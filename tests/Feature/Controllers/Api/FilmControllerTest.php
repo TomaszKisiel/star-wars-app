@@ -4,6 +4,7 @@ namespace Tests\Feature\Controllers\Api;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Tests\TestCase;
 
 /** @covers \App\Http\Controllers\Api\FilmController */
@@ -83,5 +84,26 @@ class FilmControllerTest extends TestCase {
         $response->assertJsonFragment( [
             'message' => 'Unfortunately! This film isn\'t correlated with your hero.'
         ] );
+    }
+
+    /** @test */
+    public function films_pulled_from_sw_api_are_cached() {
+        Cache::spy();
+
+        /** given */
+        $user = User::factory()->create( [ 'hero_id' => 1 ] );
+
+        /** when */
+        $this->actingAs( $user, 'api' )->getJSON( '/api/films' );
+        $this->actingAs( $user, 'api' )->getJSON( '/api/films/1' );
+
+        /** expect */
+        Cache::shouldHaveReceived( 'remember' )
+            ->with( 'api_person_1', \Mockery::any(), \Mockery::any() )
+            ->once();
+
+        Cache::shouldHaveReceived( 'remember' )
+            ->with( 'api_film_1', \Mockery::any(), \Mockery::any() )
+            ->once();
     }
 }

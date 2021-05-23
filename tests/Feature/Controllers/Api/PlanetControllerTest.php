@@ -4,6 +4,9 @@ namespace Tests\Feature\Controllers\Api;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 /** @covers \App\Http\Controllers\Api\PlanetController */
@@ -83,5 +86,26 @@ class PlanetControllerTest extends TestCase {
         $response->assertJsonFragment( [
             'message' => 'Unfortunately! This planet isn\'t correlated with your hero.'
         ] );
+    }
+
+    /** @test */
+    public function planets_pulled_from_sw_api_are_cached() {
+        Cache::spy();
+
+        /** given */
+        $user = User::factory()->create( [ 'hero_id' => 1 ] );
+
+        /** when */
+        $this->actingAs( $user, 'api' )->getJSON( '/api/planets' );
+        $this->actingAs( $user, 'api' )->getJSON( '/api/planets/1' );
+
+        /** expect */
+        Cache::shouldHaveReceived( 'remember' )
+            ->with( 'api_person_1', \Mockery::any(), \Mockery::any() )
+            ->once();
+
+        Cache::shouldHaveReceived( 'remember' )
+            ->with( 'api_planet_1', \Mockery::any(), \Mockery::any() )
+            ->once();
     }
 }

@@ -4,6 +4,7 @@
 namespace App\Actions;
 
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class GetRandomHeroId {
@@ -22,7 +23,9 @@ class GetRandomHeroId {
      * @return int
      */
     private function getRandomPage() {
-        $people = Http::get('https://swapi.dev/api/people')->collect();
+        $people = Cache::remember( 'api_people_page_1', now()->addHours(24), function() {
+            return Http::get('https://swapi.dev/api/people')->collect();
+        });
 
         $peopleCount = $people->get('count');
         $peoplePerPage = count( $people->get('results') );
@@ -37,7 +40,9 @@ class GetRandomHeroId {
      * @return int
      */
     private function getRandomHeroId( int $page ) {
-        $people = Http::get('https://swapi.dev/api/people/?page=' . $page )->collect();
+        $people = Cache::remember( 'api_people_page_' . $page, now()->addHours(24), function() use ($page) {
+           return Http::get('https://swapi.dev/api/people/?page=' . $page )->collect();
+        });
 
         $peopleOnPage = count( $people->get('results') );
         $heroIndex = rand( 0, $peopleOnPage - 1 );
