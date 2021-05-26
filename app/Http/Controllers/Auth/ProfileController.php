@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Actions\UpdateProfile;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProfileRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -37,24 +39,16 @@ class ProfileController extends Controller {
      *     ),
      * )
      * Handle the incoming request.
-     * @param \Illuminate\Http\Request $request
+     * @param ProfileRequest $request
+     * @param UpdateProfile  $updateProfile
      * @return \Illuminate\Http\JsonResponse
      */
-    public function __invoke( Request $request ) {
-        $this->validation( $data = $request->only(['email']) );
-
-        $user = Auth::user();
-        $user->email = $data[ "email" ];
-        $user->save();
+    public function __invoke( ProfileRequest $request, UpdateProfile $updateProfile ) {
+        $data = $request->validated();
+        $updateProfile->set( $data['email'] )->execute();
 
         return response()->json( [
             "message" => "Great! Your profile has been successfully updated.",
         ], 200 );
-    }
-
-    private function validation( array $data = [] ) {
-        return Validator::make( $data, [
-            'email' => [ 'required', 'email', 'max:255', 'unique:users' ],
-        ] )->validate();
     }
 }

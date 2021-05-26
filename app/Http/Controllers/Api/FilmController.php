@@ -4,11 +4,19 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\CheckResourceAccess;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Repositories\Interfaces\FilmRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
 class FilmController extends Controller {
+
+    private $filmRepository;
+
+    public function __construct(FilmRepositoryInterface $filmRepository) {
+        $this->filmRepository = $filmRepository;
+    }
 
     /**
      * @OA\Get(
@@ -30,23 +38,8 @@ class FilmController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function index() {
-        $user = Auth::user();
-        $heroId = $user->hero_id;
-
-        $hero = Cache::remember( 'api_person_' . $heroId, now()->addHours(24), function () use ( $heroId ) {
-            return Http::get( 'https://swapi.dev/api/people/' . $heroId )->collect();
-        } );
-
-        $filmsUrls = $hero->get( 'films' );
-
-        $films = collect();
-        foreach ( $filmsUrls as $url ) {
-            $films->add(
-                Cache::remember( 'api_film_' . basename($url), now()->addHours(24), function () use ( $url ) {
-                    return Http::get( $url )->collect();
-                } )
-            );
-        }
+        $user = User::find( Auth::user()->getAuthIdentifier() );
+        $films = $this->filmRepository->getAll( $user->hero_id );
 
         return response()->json( [
             'films' => $films->toArray()
@@ -84,17 +77,15 @@ class FilmController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function show( $id, CheckResourceAccess $resourceAccess ) {
-        $user = Auth::user();
+        $user = User::find( Auth::user()->getAuthIdentifier() );
+        $film = $this->filmRepository->getById( $user->hero_id, $id );
 
-        $film = Cache::remember( 'api_film_' . $id, now()->addHours( 24 ), function() use ($id) {
-            return Http::get( 'https://swapi.dev/api/films/' . $id )->collect();
-        } );
+        $authorized = $resourceAccess->set(
+            $film->get('characters'),
+            $user->hero_id
+        )->execute();
 
-        $authenticated = collect( $film->get( 'characters' ) )->contains( function ( $url ) use ( $user, $resourceAccess ) {
-            return $resourceAccess->execute( $url, '/api/people/' . $user->hero_id );
-        } );
-
-        if ( !$authenticated ) {
+        if ( !$authorized ) {
             return response()->json( [
                 'message' => 'Unfortunately! This film isn\'t correlated with your hero.'
             ], 401 );

@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Actions\IssueNewToken;
 use App\Http\Controllers\Controller;
-use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
+use App\Http\Requests\LoginRequest;
+use Illuminate\Validation\UnauthorizedException;
 
 class LoginController extends Controller {
 
@@ -36,23 +34,20 @@ class LoginController extends Controller {
      *         @OA\JsonContent(ref="#/components/schemas/UnprocessableResponse")
      *     )
      * )
-     *
-     * @param Request $request
+     * @param LoginRequest  $request
+     * @param IssueNewToken $issueNewToken
      * @return \Illuminate\Http\JsonResponse
      */
-    public function __invoke( Request $request ) {
-        $this->validation( $data = $request->only(['email', 'password']) );
+    public function __invoke( LoginRequest $request, IssueNewToken $issueNewToken ) {
+        $data = $request->validated();
 
-        if ( ! Auth::attempt( $data ) ) {
+        try {
+            $token = $issueNewToken->set( $data )->execute();
+        } catch ( UnauthorizedException $e ) {
             return response()->json([
                 'message' => 'Unfortunately! The given credentials don\'t match any existing user.'
             ], 401);
         }
-
-        $token = Str::random(64);
-        Auth::user()->apiTokens()->create([
-            'api_token' => $token
-        ]);
 
         return response()->json( [
             'message' => 'You have been logged in successfully. You can now access your data via the bearer API token.',
@@ -60,10 +55,5 @@ class LoginController extends Controller {
         ], 200 );
     }
 
-    private function validation( array $data = [] ) {
-        return Validator::make( $data, [
-            'email' => [ 'required' ],
-            'password' => [ 'required' ]
-        ] )->validate();
-    }
+
 }

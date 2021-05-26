@@ -4,19 +4,31 @@
 namespace App\Actions;
 
 
-class CheckResourceAccess {
+class CheckResourceAccess implements ActionInterface {
 
+    private $allowedHeroesUrls;
+    private $userHeroId;
 
     /**
-     * @param string $resource
-     * @param string $match
      * @return bool
      */
-    public function execute( string $resource, string $match ) {
-        $path = parse_url( $resource, PHP_URL_PATH );
-        $match = substr( $match, -1 ) === '/' ? $match : $match . '/';
+    public function execute() {
+        foreach ( $this->allowedHeroesUrls as $allowedId ) {
+            $allowedId = intval( basename( $allowedId ) );
 
-        return $path === $match;
+            if ( $allowedId === $this->userHeroId ) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function set( $allowedHeroesUrls, $userHeroId ) {
+        $this->allowedHeroesUrls = $allowedHeroesUrls;
+        $this->userHeroId = $userHeroId;
+
+        return $this;
     }
 
 }

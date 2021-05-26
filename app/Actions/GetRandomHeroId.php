@@ -7,7 +7,7 @@ namespace App\Actions;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 
-class GetRandomHeroId {
+class GetRandomHeroId implements ActionInterface {
 
     /**
      * @return int

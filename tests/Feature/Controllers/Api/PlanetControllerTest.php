@@ -88,24 +88,24 @@ class PlanetControllerTest extends TestCase {
         ] );
     }
 
-    /** @test */
-    public function planets_pulled_from_sw_api_are_cached() {
-        Cache::spy();
-
-        /** given */
-        $user = User::factory()->create( [ 'hero_id' => 1 ] );
-
-        /** when */
-        $this->actingAs( $user, 'api' )->getJSON( '/api/planets' );
-        $this->actingAs( $user, 'api' )->getJSON( '/api/planets/1' );
-
-        /** expect */
-        Cache::shouldHaveReceived( 'remember' )
-            ->with( 'api_person_1', \Mockery::any(), \Mockery::any() )
-            ->once();
-
-        Cache::shouldHaveReceived( 'remember' )
-            ->with( 'api_planet_1', \Mockery::any(), \Mockery::any() )
-            ->once();
-    }
+//    /** @test */
+//    public function planets_pulled_from_sw_api_are_cached() {
+//        Cache::spy();
+//
+//        /** given */
+//        $user = User::factory()->create( [ 'hero_id' => 1 ] );
+//
+//        /** when */
+//        $this->actingAs( $user, 'api' )->getJSON( '/api/planets' );
+//        $this->actingAs( $user, 'api' )->getJSON( '/api/planets/1' );
+//
+//        /** expect */
+//        Cache::shouldHaveReceived( 'remember' )
+//            ->with( 'api_person_1', \Mockery::any(), \Mockery::any() )
+//            ->once();
+//
+//        Cache::shouldHaveReceived( 'remember' )
+//            ->with( 'api_planet_1', \Mockery::any(), \Mockery::any() )
+//            ->once();
+//    }
 }

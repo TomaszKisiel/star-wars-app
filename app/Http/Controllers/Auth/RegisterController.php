@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Actions\CreateNewUser;
 use App\Actions\GetRandomHeroId;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RegisterRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -36,32 +38,21 @@ class RegisterController extends Controller {
      *         @OA\JsonContent(ref="#/components/schemas/UnprocessableResponse")
      *     )
      * )
-     * @param Request         $request
-     * @param GetRandomHeroId $service
+     * @param RegisterRequest $request
+     * @param CreateNewUser   $newUserService
      * @return \Illuminate\Http\JsonResponse
      */
-    public function __invoke( Request $request, GetRandomHeroId $service) {
-        $this->validation( $data = $request->only(['email', 'password', 'password_confirmation']) );
+    public function __invoke( RegisterRequest $request, CreateNewUser $newUserService ) {
+        $data = $request->validated();
 
-        $user = User::create( [
-            'hero_id' => $service->execute(),
-            'email' => $data['email'],
-            'password' => Hash::make( $data[ 'password' ] )
-        ] );
+        $user = $newUserService->set(
+            $data['email'],
+            $data['password']
+        )->execute();
 
         return response()->json( [
             'message' => 'Your account has been successfully created! Now You can sign in via login endpoint.',
             'user' => $user
         ], 201 );
     }
-
-    private function validation( array $data = [] ) {
-        return Validator::make( $data, [
-            'email' => [ 'required', 'email', 'max:255', 'unique:users' ],
-            'password' => [ 'required', 'min:8', 'max:64', 'regex:/(?=.*[a-zA-Z])(?=.*[0-9])(?=.*[\W])/', 'confirmed' ]
-        ], [
-            'password.regex' => 'Password is too weak. At least one letter, number and special character are required.'
-        ] )->validate();
-    }
-
 }

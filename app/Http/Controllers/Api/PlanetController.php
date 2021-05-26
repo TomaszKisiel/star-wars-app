@@ -4,11 +4,17 @@ namespace App\Http\Controllers\Api;
 
 use App\Actions\CheckResourceAccess;
 use App\Http\Controllers\Controller;
+use App\Models\User;
+use App\Repositories\Interfaces\PlanetRepositoryInterface;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Http;
 
 class PlanetController extends Controller {
+
+    private $planetRepository;
+
+    public function __construct(PlanetRepositoryInterface $planetRepository) {
+        $this->planetRepository = $planetRepository;
+    }
 
     /**
      * @OA\Get(
@@ -30,22 +36,8 @@ class PlanetController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function index() {
-        $user = Auth::user();
-        $heroId = $user->hero_id;
-
-        $hero = Cache::remember( 'api_person_' . $heroId, now()->addHours(24), function () use ( $heroId ) {
-            return Http::get( 'https://swapi.dev/api/people/' . $heroId )->collect();
-        } );
-
-        $planetUrl = $hero->get( 'homeworld' );
-        $planetId = basename( $planetUrl );
-
-        $planets = collect();
-        $planets->add(
-            Cache::remember( 'api_planet_' . $planetId, now()->addHours(24), function () use ( $planetId ) {
-                return Http::get( 'https://swapi.dev/api/planets/' . $planetId )->collect();
-            } )
-        );
+        $user = User::find( Auth::user()->getAuthIdentifier() );
+        $planets = $this->planetRepository->getAll( $user->hero_id );
 
         return response()->json( [
             'planets' => $planets->toArray()
@@ -83,17 +75,15 @@ class PlanetController extends Controller {
      * @return \Illuminate\Http\JsonResponse
      */
     public function show( $id, CheckResourceAccess $resourceAccess ) {
-        $user = Auth::user();
+        $user = User::find( Auth::user()->getAuthIdentifier() );
+        $planet = $this->planetRepository->getById( $user->hero_id, $id );
 
-        $planet = Cache::remember( 'api_planet_' . $id, now()->addHours( 24 ), function () use ( $id ) {
-            return Http::get( 'https://swapi.dev/api/planets/' . $id )->collect();
-        } );
+        $authorized = $resourceAccess->set(
+            $planet->get('residents'),
+            $user->hero_id
+        )->execute();
 
-        $authenticated = collect( $planet->get( 'residents' ) )->contains( function ( $url ) use ( $user, $resourceAccess ) {
-            return $resourceAccess->execute( $url, '/api/people/' . $user->hero_id );
-        } );
-
-        if ( !$authenticated ) {
+        if ( !$authorized ) {
             return response()->json( [
                 'message' => 'Unfortunately! This planet isn\'t correlated with your hero.'
             ], 401 );
